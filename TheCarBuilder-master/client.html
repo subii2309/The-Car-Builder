@@ -1,0 +1,278 @@
+<html>
+  <head>
+    <title>The Car Builder</title>
+    <style>
+    h3 {
+        border: 1px blue;
+      }
+    </style>
+  </head>
+
+<body style="background-color:powderblue;">
+
+  <h1 style="text-align: center;color:blue"> Welcome to the Car Builder application</h1><hr>
+  <i> <h2 style="text-align: center;color:blue"> My Own Car</h2></i>
+
+ <pre>
+
+<form action="">
+
+<fieldset id="Engine_group">
+
+
+<h3 style ="background-color:MediumSeaGreen;">Select Engine Type</h3>
+
+Engine: <select name = "Engine"><br>
+
+<option name="150 horsepower" value="150 horsepower" default>150 horsepower</option><br>
+<option name="250 horsepower" value="250 horsepower">250 horsepower</option><br>
+<option name="400 horsepower" value="400 horsepower">400 horsepower</option><br>
+</select>
+
+  <input type="radio" name="EngineColor" value="blue" checked> Blue<br>
+  <input type="radio" name="EngineColor" value="Red"> Red<br>
+  <input type="radio" name="EngineColor" value="Gold"> Gold<br>
+
+
+</fieldset>
+<hr>
+<fieldset id="body_group">
+  <h3 style ="background-color:MediumSeaGreen;">Select Car Bodies</h3>
+
+CarBodies: <select name = "Body"><br>
+
+<option name="Similar to Ford Fiesta" value="Similar to Ford Fiesta" default> Similar to Ford Fiesta</option><br>
+<option name="Similar to Ford Fusion" value="Similar to Ford Fusion">Similar to Ford Fusion</option><br>
+<option name="Similar to Ford Mustang" value="Similar to Ford Mustang">Similar to Ford Mustang</option><br>
+  <input type="radio" name="BodyColor" value="blue" checked> Blue<br>
+  <input type="radio" name="BodyColor" value="Red"> Red<br>
+  <input type="radio" name="BodyColor" value="Gold"> Gold<br>
+</select>
+</fieldset>
+<hr>
+<fieldset id="wheel_group">
+  <h3 style ="background-color:MediumSeaGreen;">Select Wheels</h3>
+  Wheels: <select name = "Wheel">
+
+<option name="WheelType#1" value="WheelType1" default> WheelType#1</option><br>
+<option name="WheelType#2" value="WheelType2">WheelType#2</option><br>
+<option name="WheelType#3" value="WheelType3">WheelType#3</option><br>
+  <input type="radio" name="WheelColor" value="blue" checked> Blue<br>
+  <input type="radio" name="WheelColor" value="Red"> Red<br>
+  <input type="radio" name="WheelColor" value="Gold"> Gold<br>
+</select>
+
+ </fieldset>
+
+
+ <button id = "sub" type = "button"  onclick = "doAJAXstuff(this.form)">Submit</button>  <button type = "reset" name="Reset" value="Reset">Reset</button>
+
+ </form>
+</pre>
+
+  <p id="thispart"> Output </p>
+
+<script type = "text/javascript">
+var uid = 0;
+var increment = 0;
+var EngineFree = 0;
+var BodyFree = 0;
+var WheelFree = 0;
+  function checkBlue(thetype){
+    //function to check if the string is Blue, then I add the value as "Blue"
+    if(thetype.value.toString().trim() == "")
+    {
+        thetype.value = "Blue";
+    }
+  }
+
+  //Call php_page.php and provide the input
+
+  function doAJAXstuff(theform) {
+    var xmlhttp = new XMLHttpRequest();
+    var xmlhttp2 = new XMLHttpRequest();
+    var xmlhttp3 = new XMLHttpRequest();
+    var xmlhttp4 = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         // Typical action to be performed when the document is ready:
+         my_callback(this,theform,xmlhttp2,xmlhttp3,xmlhttp4);
+      }
+    };
+    xmlhttp.open("GET","http://localhost/p1_php/assembler.php?Engine="+theform.Engine.value+
+                "&EngineColor="+theform.EngineColor.value+
+                "&Body="+theform.Body.value+
+                "&BodyColor="+theform.BodyColor.value+
+                "&Wheel="+theform.Wheel.value+
+                "&WheelColor="+theform.WheelColor.value
+                ,true);
+    xmlhttp.send();
+    //var EngineReq = new XMLHttpRequest();
+    //var BodyReq = new XMLHttpRequest();
+    //var WheelReq = new XMLHttpRequest();
+
+  }
+
+  function my_callback(request,theform,xmlhttp2,xmlhttp3,xmlhttp4) {
+
+      if (request.status == 200) {
+          //alert(request.responseText);
+          var status = JSON.parse(request.responseText);
+          if(status['success'] == "true"){
+            uid = status['uid'];
+            //alert("uid is"+uid)
+            document.getElementById("sub").onclick = function() {
+              this.disabled = true;
+            }
+            //ENGINE REQ
+
+            xmlhttp2.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                 // callback for
+                 my_callback2(this);
+              }
+            };
+            xmlhttp2.open("GET","http://localhost/p1_php/man_eng.php?Engine="+
+            theform.Engine.value+"&EngineColor="+
+            theform.EngineColor.value+"&uid="+uid,true);
+
+
+            //Body REQ
+
+            xmlhttp3.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                 // Typical action to be performed when the document is ready:
+                 my_callback3(this);
+              }
+            };
+
+            xmlhttp3.open("GET","http://localhost/p1_php/man_body.php?Body="+theform.Body.value+
+                        "&BodyColor="+theform.BodyColor.value+"&uid="+uid,true);
+            //xmlhttp3.send();
+
+            //Wheel REQ
+
+            xmlhttp4.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                 // Typical action to be performed when the document is ready:
+                 my_callback4(this);
+              }
+            };
+            xmlhttp4.open("GET","http://localhost/p1_php/man_wheel.php?Wheel="+theform.Wheel.value+
+                        "&WheelColor="+theform.WheelColor.value+"&uid="+uid,true);
+
+            xmlhttp2.send();
+            xmlhttp3.send();
+            xmlhttp4.send();
+
+
+
+          }
+
+      }
+    }
+
+      function my_callback2(request) {
+
+          if (request.status == 200) {
+              var status = request.responseText;
+              alert(status);
+              if (status.includes("done")) {
+                  increment++;
+                  if(increment == 3){
+                  //   var endxml = new XMLHttpRequest();
+                  //   endxml.onreadystatechange = function() {
+                  //     if (this.readyState == 4 && this.status == 200) {
+                  //        // All the jobs are done. notify to SESSION
+                  //
+                  //     }
+                  //   };
+                  //   //endxml.open("GET","http://localhost/p1_php/end_user.php?userid="+var,true);
+                  //   //endxml.send();
+                  alert("car is done");
+                  }
+
+              }
+
+
+              //alert("There wasn't an error, just wanted to let you see how an alert works. Received from the server:\n"+request.responseText);
+
+          }
+
+      else if (request.status=404) {
+  	     alert("Server was not found: data returned is :\n"+request.responseText);
+      }
+
+  }
+
+  function my_callback3(request) {
+
+      if (request.status == 200) {
+          var status = request.responseText;
+          alert(status);
+          if (status.includes("done")) {
+              increment++;
+              if(increment == 3){
+              //   var endxml = new XMLHttpRequest();
+              //   endxml.onreadystatechange = function() {
+              //     if (this.readyState == 4 && this.status == 200) {
+              //        // All the jobs are done. notify to SESSION
+              //
+              //     }
+              //   };
+              //   //endxml.open("GET","http://localhost/p1_php/end_user.php?userid="+var,true);
+              //   //endxml.send();
+              //alert("car is done");
+              }
+
+          }
+
+
+          //alert("There wasn't an error, just wanted to let you see how an alert works. Received from the server:\n"+request.responseText);
+
+      }
+
+  else if (request.status=404) {
+     alert("Server was not found: data returned is :\n"+request.responseText);
+  }
+
+}
+
+function my_callback4(request) {
+
+    if (request.status == 200) {
+        var status = request.responseText;
+        alert(status);
+        if (status.includes("done")) {
+            increment++;
+            if(increment == 3){
+               var endxml = new XMLHttpRequest();
+               endxml.onreadystatechange = function() {
+                 if (this.readyState == 4 && this.status == 200) {
+                    // All the jobs are done. notify to SESSION
+                    alert("car is done");
+                 }
+               };
+               endxml.open("GET","http://localhost/p1_php/updater.php?uid="+uid,true);
+               endxml.send();
+
+            }
+
+        }
+
+
+        //alert("There wasn't an error, just wanted to let you see how an alert works. Received from the server:\n"+request.responseText);
+
+    }
+
+else if (request.status=404) {
+   alert("Server was not found: data returned is :\n"+request.responseText);
+}
+
+}
+
+  </script>
+
+
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Car Builder Admin</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+    h3 {
+        border: 1px blue;
+      }
+	table {
+    width: 80%;
+	}
+	tr {
+    background: #f1f1f1;
+    font-weight: bold;
+    padding: 4px;
+	}
+	td {
+    background: #f9f9f9;
+    padding: 4px;
+	}
+    </style>
+  </head>
+  <body style="background-color:#A9A9A9;">
+
+	<h1 style="text-align: center;color:black"> Car Builder Admin</h1>
+
+
+
+<form>
+
+<h3 style ="background-color:#00BFFF;">Car Assembly</h3>
+  <br>
+<div>
+<table id="myTable">
+<thead>
+<tr>
+    <th>Engine</th>
+    <th>EngineColor</th>
+    <th>Body</th>
+	 <th>BodyColor</th>
+	 <th>Wheel</th>
+	 <th>WheelColor</th>
+	 <th>User ID</th>
+	 <th>Status</th>
+  </tr>
+ </thead>
+</table>
+<br>
+
+
+ </div>
+<button id="myButton">add</button>
+</form>
+
+
+
+ <script type="text/javascript">
+
+
+$(document).ready(doLoop());
+
+function doLoop(){
+
+  var xmlhttp = new XMLHttpRequest();
+
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var myArr = JSON.parse(this.responseText);
+		//alert(JSON.stringify(myArr[0]));
+
+
+		var row = $("<tr><td>" + myArr[0].car_array.Engine+"</td><td>" +
+              myArr[0].car_array.EngineColor + "</td><td>" +
+              myArr[0].car_array.Body + "</td><td>" +
+              myArr[0].car_array.BodyColor + "</td><td>" +
+              myArr[0].car_array.Wheel + "</td><td>" +
+              myArr[0].car_array.WheelColor + "</td><td>" +
+              myArr[0].v_count + "</td><td>" +
+              myArr[0].stat + "</td></tr>"
+            );
+
+               $('#myTable').append(row);
+     }
+   }
+
+xmlhttp.open("GET", "http://localhost/p1_php/retreive.php", true);
+xmlhttp.send();
+
+}
+
+
+
+</script>
+
+  </body>
+
+</html>
